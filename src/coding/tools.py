@@ -147,7 +147,7 @@ def benign_graph_add_node_mgr(g, logs, key):
             edge_set.add((s_node, t_node))
         f.close()
     elif key == EVENT_KEY.PROCESS:
-        o = open('win10/cmdline.txt','w',encoding='utf-8',errors='ignore')
+        o = open('win10/cmdline.txt','a',encoding='utf-8',errors='ignore')
         # add process type node
         for index, row in logs.iterrows():
             Parentid = row['ParentID'].replace(',','') + str(row['PPName'])

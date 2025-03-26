@@ -71,7 +71,7 @@ if __name__ == "__main__":
         event_file = dataset + '/process-event-benign.txt'
     else:
         event_file = dataset + '/process-event-anomaly.txt'
-    data = open(event_file,'w')
+    data = open(event_file,'a')
     cnt = 0
     hit = set()
 

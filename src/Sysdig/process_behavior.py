@@ -7,8 +7,8 @@ from argparse import ArgumentParser
 import random
 def split_cmd_and_filename(file_path,dataset):
     f = open(file_path,'r')
-    o1 = open(dataset+'/cmdline.txt','w')
-    o2 = open(dataset+'/filename.txt','w')
+    o1 = open(dataset+'/cmdline.txt','a')
+    o2 = open(dataset+'/filename.txt','a')
     print('start graph')
     isprocess_file = True
     while True:
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         event_file = dataset + '/process-event-benign.txt'
     else:
         event_file = dataset + '/process-event-anomaly.txt'
-    data = open(event_file,'w')
+    data = open(event_file,'a')
     for node in G:
         if G.nodes[node]['type'] == APTLOG_NODE_TYPE.PROCESS:
             if G.nodes[node]['label'] != '':
