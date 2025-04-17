@@ -1,0 +1,24 @@
+# My venv
+Lib
+Scripts
+pyvenv.cfg
+Include
+share
+__pycache__
+# Dataset
+## trace dataset
+trace.txt
+ta1-trace-e3-official-1*
+names.json
+types.json
+metadata.json
+malicious_names.txt
+malicious.pkl
+test*.pkl
+train*.pkl
+## theia
+ta1-theia-e3-official-6*
+theia.txt
+## cadets
+ta1-cadets-e3-official*
+cadets.txt
