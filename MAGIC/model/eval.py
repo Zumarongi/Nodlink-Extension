@@ -172,25 +172,35 @@ def evaluate_entity_level_using_knn(dataset, x_train, x_test, y_test):
     else:
         n_neighbors = 10
 
+    print("Using KNN...")
     nbrs = NearestNeighbors(n_neighbors=n_neighbors, n_jobs=-1)
     nbrs.fit(x_train)
+    print("KNN fit done.")
 
     save_dict_path = './eval_result/distance_save_{}.pkl'.format(dataset)
     if not os.path.exists(save_dict_path):
+        print("Calculating distances...")
         idx = list(range(x_train.shape[0]))
         random.shuffle(idx)
         distances, _ = nbrs.kneighbors(x_train[idx][:min(50000, x_train.shape[0])], n_neighbors=n_neighbors)
+        print("Calculated the first group of distances.")
         del x_train
         mean_distance = distances.mean()
         del distances
         distances, _ = nbrs.kneighbors(x_test, n_neighbors=n_neighbors)
+        print("Calculated the second group of distances.")
         save_dict = [mean_distance, distances.mean(axis=1)]
         distances = distances.mean(axis=1)
         with open(save_dict_path, 'wb') as f:
             pkl.dump(save_dict, f)
+        print("Saved distances to file.")
     else:
+        print("Loading distances from existing file...")
         with open(save_dict_path, 'rb') as f:
             mean_distance, distances = pkl.load(f)
+        print("Loaded distances from file.")
+    print("KNN evaluation done.")
+    
     score = distances / mean_distance
     del distances
     auc = roc_auc_score(y_test, score)

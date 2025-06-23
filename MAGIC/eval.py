@@ -23,36 +23,65 @@ def main(main_args):
     set_random_seed(0)
 
     if dataset_name == 'streamspot' or dataset_name == 'wget':
+        
+        print(f"Loading {dataset_name} dataset...")
         dataset = load_batch_level_dataset(dataset_name)
+        print(f"Finished loading {dataset_name} dataset.")
+        
         n_node_feat = dataset['n_feat']
         n_edge_feat = dataset['e_feat']
         main_args.n_dim = n_node_feat
         main_args.e_dim = n_edge_feat
+        
+        print(f"Building model...")
         model = build_model(main_args)
+        print(f"Finished building model.")
+        
+        print(f"Loading model state from checkpoint...")
         model.load_state_dict(torch.load("./checkpoints/checkpoint-{}.pt".format(dataset_name), map_location=device))
+        print(f"Finished loading model state.")
+        
         model = model.to(device)
         pooler = Pooling(main_args.pooling)
+        print(f"Starting evaluation...")
         test_auc, test_std = batch_level_evaluation(model, pooler, device, ['knn'], args.dataset, main_args.n_dim,
                                                     main_args.e_dim)
+        print(f"Finished evaluation.")
     else:
+        print(f"Loading {dataset_name} dataset...")
         metadata = load_metadata(dataset_name)
+        print(f"Finished loading {dataset_name} dataset.")
+        
         main_args.n_dim = metadata['node_feature_dim']
         main_args.e_dim = metadata['edge_feature_dim']
+        
+        print(f"Building model...")
         model = build_model(main_args)
+        print(f"Finished building model.")
+        
+        print(f"Loading model state from checkpoint...")
         model.load_state_dict(torch.load("./checkpoints/checkpoint-{}.pt".format(dataset_name), map_location=device))
+        print(f"Finished loading model state.")
+        
         model = model.to(device)
         model.eval()
         malicious, _ = metadata['malicious']
         n_train = metadata['n_train']
         n_test = metadata['n_test']
 
+        print(f"Starting evaluation...")
         with torch.no_grad():
+            
+            print(f"Loading training datasets...")
             x_train = []
             for i in range(n_train):
                 g = load_entity_level_dataset(dataset_name, 'train', i).to(device)
                 x_train.append(model.embed(g).cpu().numpy())
                 del g
             x_train = np.concatenate(x_train, axis=0)
+            print(f"Finished loading training datasets.")
+            
+            print(f"Loading test datasets...")
             skip_benign = 0
             x_test = []
             for i in range(n_test):
@@ -63,6 +92,7 @@ def main(main_args):
                 x_test.append(model.embed(g).cpu().numpy())
                 del g
             x_test = np.concatenate(x_test, axis=0)
+            print(f"Finished loading test datasets.")
 
             n = x_test.shape[0]
             y_test = np.zeros(n)
@@ -79,8 +109,15 @@ def main(main_args):
             result_x_test = x_test[test_idx]
             result_y_test = y_test[test_idx]
             del x_test, y_test
+            print(f"Finished preparing test datasets.")
+            
+            print(f"Evaluating using KNN...")
             test_auc, test_std, _, _ = evaluate_entity_level_using_knn(dataset_name, x_train, result_x_test,
                                                                        result_y_test)
+            print(f"Finished evaluating using KNN.")
+            
+        print(f"Finished evaluation.")
+    
     print(f"#Test_AUC: {test_auc:.4f}±{test_std:.4f}")
     return
 
