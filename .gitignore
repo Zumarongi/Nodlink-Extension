@@ -1,14 +1,20 @@
+# Python
 .Python
 env/
 venv
 .venv*
 .python-version
 
-.cache
-src/*/__pycache__/
-src/*/real-time/__pycache__/
-src/*/process_embedding_train.json
-
+# VsCode
 .vscode/
 
+# Cache files
+*.pyc
+.cache
+__pycache__/
+
+# Datasets
 dataset/
+
+# Generated files
+process_embedding_train.json
