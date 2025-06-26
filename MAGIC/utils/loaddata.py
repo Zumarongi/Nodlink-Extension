@@ -100,11 +100,11 @@ def load_rawdata(name):
 
 def load_batch_level_dataset(dataset_name):
     dataset = load_rawdata(dataset_name)
-    graph, _ = dataset[0]
-    node_feature_dim = 0
+    graph, _ = dataset[0] # ?
+    node_feature_dim = 0 # = max{g.ndata["type"].max().item()}
     for g, _ in dataset:
         node_feature_dim = max(node_feature_dim, g.ndata["type"].max().item())
-    edge_feature_dim = 0
+    edge_feature_dim = 0 # = max{g.edata["type"].max().item()}
     for g, _ in dataset:
         edge_feature_dim = max(edge_feature_dim, g.edata["type"].max().item())
     node_feature_dim += 1

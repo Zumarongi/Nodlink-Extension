@@ -39,7 +39,7 @@ pattern_time = re.compile(r'timestampNanos\":(.*?),')
 pattern_file_name = re.compile(r'map\":\{\"path\":\"(.*?)\"')
 pattern_process_name = re.compile(r'map\":\{\"name\":\"(.*?)\"')
 pattern_netflow_object_name = re.compile(r'remoteAddress\":\"(.*?)\"')
-
+# Extract the essential key from .json entry
 
 def read_single_graph(dataset, malicious, path, test=False):
     global node_type_cnt, edge_type_cnt
@@ -127,13 +127,14 @@ def preprocess_dataset(dataset):
 
                 if uuid == '00000000-0000-0000-0000-000000000000' or subject_type in ['SUBJECT_UNIT']:
                     continue
-                id_nodetype_map[uuid] = subject_type
+                id_nodetype_map[uuid] = subject_type  # Nodetype：{uuid: subject_typr}
                 if 'FILE' in subject_type and len(pattern_file_name.findall(line)) > 0:
                     id_nodename_map[uuid] = pattern_file_name.findall(line)[0]
                 elif subject_type == 'SUBJECT_PROCESS' and len(pattern_process_name.findall(line)) > 0:
                     id_nodename_map[uuid] = pattern_process_name.findall(line)[0]
                 elif subject_type == 'NetFlowObject' and len(pattern_netflow_object_name.findall(line)) > 0:
-                    id_nodename_map[uuid] = pattern_netflow_object_name.findall(line)[0]
+                    id_nodename_map[uuid] = pattern_netflow_object_name.findall(line)[0] 
+                # nodename_map: {uuid: subject_name} 
     for key in metadata[dataset]:
         for file in metadata[dataset][key]:
             if os.path.exists('../data/{}/'.format(dataset) + file + '.txt'):
